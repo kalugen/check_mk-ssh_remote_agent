@@ -1,10 +1,14 @@
 #!/bin/bash
 
 # Parse cmd line option
-while getopts "H:" CURRENT_OPTION; do
+while getopts "H:K:U:" CURRENT_OPTION; do
     case "${CURRENT_OPTION}" in
     H)
         HOST_IP=${OPTARG} ;;
+    K)
+        SSH_KEYS=${OPTARG} ;;
+    U)
+        SSH_USER=${OPTARG} ;;
     h|*)
         util.help.print
         exit 1 ;;
@@ -30,4 +34,4 @@ cat ${CMK_AGENT_DIR}/check_mk_agent.appliance \
     > ${TEMP_FILE}
 
 # Execute remotely the minified script. That's all.
-ssh ${HOST_IP} 'bash -s' -- < ${TEMP_FILE}
+ssh -i ${SSH_KEYS} ${SSH_USER}@${HOST_IP} 'bash -s 2>/dev/null' -- < ${TEMP_FILE}
