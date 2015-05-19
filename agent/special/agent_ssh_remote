@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Cmk Remote Agent
+CMK_SHARE_DIR=/usr/share/check_mk
+CMK_AGENT_DIR=${CMK_SHARE_DIR}/agents
+
+# Grabs the agent itself and all the valid plugins and puts them in a tempfile
+TEMP_FILE=$(mktemp)
+
+# As of now, we support only linux-based appliances and shell script plugins!
+
+# Minify the agents + shell scripts plugins
+cat ${CMK_AGENT_DIR}/check_mk_agent.appliance \
+    ${CMK_AGENT_DIR}/plugins/netstat.linux \
+    ${CMK_AGENT_DIR}/plugins/nfsexports \
+    ${CMK_AGENT_DIR}/plugins/mk_inventory.linux \
+    ${CMK_AGENT_DIR}/plugins/mk_postgres \
+    > ${TEMP_FILE}
+
+# Execute remotely the minified script. That's all.
+ssh ${1} 'bash -s' -- < ${TEMP_FILE}
