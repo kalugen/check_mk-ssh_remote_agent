@@ -21,12 +21,15 @@ shift $((${OPTIND} -1));
 CMK_SHARE_DIR=/usr/share/check_mk
 CMK_AGENT_DIR=${CMK_SHARE_DIR}/agents
 
+# SSH options to disable host-key checking
+SSH_OPTS="-o StrictHostKeyChecking=no"
+
 # Grabs the agent itself and all the valid plugins and puts them in a tempfile
 TEMP_FILE=$(mktemp)
 
 # As of now, we support only linux-based appliances and shell script plugins!
 
-# Minify the agents + shell scripts plugins
+# Minify the agent + relevant shell-script plugins
 cat ${CMK_AGENT_DIR}/check_mk_agent.appliance \
     ${CMK_AGENT_DIR}/plugins/netstat.linux \
     ${CMK_AGENT_DIR}/plugins/nfsexports \
@@ -35,4 +38,4 @@ cat ${CMK_AGENT_DIR}/check_mk_agent.appliance \
     > ${TEMP_FILE}
 
 # Execute remotely the minified script. That's all.
-ssh -i ${SSH_KEYS} ${SSH_USER}@${HOST_IP} 'bash -s 2>/dev/null' -- < ${TEMP_FILE}
+ssh ${SSH_OPTS} -i ${SSH_KEYS} ${SSH_USER}@${HOST_IP} 'bash -s 2>/dev/null' -- < ${TEMP_FILE}
