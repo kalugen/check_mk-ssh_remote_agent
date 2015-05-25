@@ -30,12 +30,16 @@ TEMP_FILE=$(mktemp)
 # As of now, we support only linux-based appliances and shell script plugins!
 
 # Minify the agent + relevant shell-script plugins
-cat ${CMK_AGENT_DIR}/check_mk_agent.appliance \
-    ${CMK_AGENT_DIR}/plugins/netstat.linux \
-    ${CMK_AGENT_DIR}/plugins/nfsexports \
-    ${CMK_AGENT_DIR}/plugins/mk_inventory.linux \
-    ${CMK_AGENT_DIR}/plugins/mk_postgres \
+cat ${CMK_AGENT_DIR}/special/check_mk_agent.linux.appliance \
+    ${CMK_AGENT_DIR}/plugins/netstat.linux.appliance \
+    ${CMK_AGENT_DIR}/plugins/nfsexports.linux.appliance \
+    ${CMK_AGENT_DIR}/plugins/mk_inventory.linux.appliance \
+    ${CMK_AGENT_DIR}/plugins/mk_postgres.linux.appliance \
     > ${TEMP_FILE}
 
 # Execute remotely the minified script. That's all.
 ssh ${SSH_OPTS} -i ${SSH_KEYS} ${SSH_USER}@${HOST_IP} 'bash -s 2>/dev/null' -- < ${TEMP_FILE}
+
+# This is necessary because otherwise CheckMK will report an error and not
+# the agent output
+exit 0
