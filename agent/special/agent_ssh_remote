@@ -40,6 +40,9 @@ cat ${CMK_AGENT_DIR}/special/check_mk_agent.linux.appliance \
 # Execute remotely the minified script. That's all.
 ssh ${SSH_OPTS} -i ${SSH_KEYS} ${SSH_USER}@${HOST_IP} 'bash -s 2>/dev/null' -- < ${TEMP_FILE}
 
+# Remove the temporary file
+rm -f ${TEMP_FILE}
+
 # This is necessary because otherwise CheckMK will report an error and not
 # the agent output
 exit 0
